@@ -19,29 +19,28 @@ class StarWarsFilm(id: EntityID<Int>) : IntEntity(id) {
 }
 
 fun main() {
-    Database.connect("jdbc:h2:mem:test", driver = "org.h2.Driver", user = "root", password = "")
+    Database.connect("jdbc:h2:~/test-db", driver = "org.h2.Driver")
 
-    transaction {
-        SchemaUtils.create (StarWarsFilms)
+    val movie = transaction {
+        SchemaUtils.create(StarWarsFilms)
 
         val movie = StarWarsFilm.new {
             name = "The Last Jedi"
             sequelId = 8
             director = "Rian Johnson"
         }
-        val movieId = movie.id
 
-        StarWarsFilms.update({ StarWarsFilms.id eq movieId }) {
+        StarWarsFilms.update({ StarWarsFilms.id eq movie.id }) {
             it[StarWarsFilms.name] = "Not the very last Jedi"
         }
 
-        val dslName = StarWarsFilms.select { StarWarsFilms.id eq movieId }.single().let { it[StarWarsFilms.name] }
-        val daoName = StarWarsFilm[movieId].name
-        StarWarsFilm.reload(movie, flush = false)
-        val reloadedDaoName = StarWarsFilm[movieId].name
+        val dslName = StarWarsFilms.select { StarWarsFilms.id eq movie.id }.single().let { it[StarWarsFilms.name] }
+        val daoName = StarWarsFilm[movie.id].name
 
         println("dslName = $dslName") // prints "Not the very last Jedi"
         println("daoName = $daoName") // prints "The Last Jedi"
-        println("reloadedDaoName = $reloadedDaoName") // prints "Not the very last Jedi"
+        movie
     }
+    val newName = transaction { StarWarsFilm[movie.id].name }
+    println("newName = $newName") // prints "Not the very last Jedi"
 }
