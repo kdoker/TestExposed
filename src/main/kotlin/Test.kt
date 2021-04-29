@@ -40,8 +40,8 @@ fun main() {
         StarWarsFilm.reload(movie, flush = false)
         val reloadedDaoName = StarWarsFilm[movieId].name
 
-        println("dslName = $dslName")
-        println("daoName = $daoName")
-        println("reloadedDaoName = $reloadedDaoName")
+        println("dslName = $dslName") // prints "Not the very last Jedi"
+        println("daoName = $daoName") // prints "The Last Jedi"
+        println("reloadedDaoName = $reloadedDaoName") // prints "Not the very last Jedi"
     }
 }
